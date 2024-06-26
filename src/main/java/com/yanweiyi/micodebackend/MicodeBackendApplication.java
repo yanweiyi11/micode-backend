@@ -4,7 +4,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 @SpringBootApplication
-@MapperScan("com.yanweiyi.micodebackend.mapper")
 @Slf4j
 public class MicodeBackendApplication {
 
@@ -32,8 +30,7 @@ public class MicodeBackendApplication {
     private void initMQ() {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(rabbitmqHost);
-        try {
-            Connection connection = factory.newConnection();
+        try(Connection connection = factory.newConnection();) {
             Channel channel = connection.createChannel();
             String exchangeName = "judge_exchange";
             channel.exchangeDeclare(exchangeName, "direct");

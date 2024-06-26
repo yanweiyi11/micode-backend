@@ -5,31 +5,17 @@ spring:
     username: root
     password: anEii020827.
   redis:
-    database: 2
+    database: 0
     host: redis-10023.c290.ap-northeast-1-2.ec2.redns.redis-cloud.com
     port: 10023
     timeout: 5000
     username: default
     password: RUJJVrnJ5Pj7YSNBFCvvh78BaL7GrUX1
   rabbitmq:
-    host: localhost
+    host: 8.219.222.88
     port: 5672
     password: guest
     username: guest
-mybatis-plus:
-  configuration:
-    map-underscore-to-camel-case: false
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # MyBatis 输出日志
-knife4j:
-  enable: true
-  openapi:
-    title: "MiCoder 接口文档"
-    version: 1.0
-    group:
-      default:
-        api-rule: package
-        api-rule-resources:
-          - com.yanweiyi.micodebackend.controller
 # 代码沙箱配置
 codesandbox:
   type: remote

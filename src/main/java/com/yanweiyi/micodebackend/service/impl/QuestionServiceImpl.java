@@ -56,7 +56,12 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         QuestionDetailVO questionDetailVO = new QuestionDetailVO();
         questionDetailVO.copyByQuestion(question);
 
-        User loginUser = userService.getLoginUserOrThrow(request);
+        User loginUser = userService.getLoginUser(request);
+        // 如果用户没登陆，置空答案然后直接返回
+        if (loginUser == null) {
+            questionDetailVO.setAnswer(null);
+            return questionDetailVO;
+        }
         // 判断用户是否是管理员和题目创建者，如果不是需要置空答案
         if (!userService.isAdmin(loginUser) && !question.getUserId().equals(loginUser.getId())) {
             questionDetailVO.setAnswer(null);

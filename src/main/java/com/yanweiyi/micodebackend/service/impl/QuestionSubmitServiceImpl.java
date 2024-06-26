@@ -199,7 +199,10 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         LambdaQueryWrapper<QuestionSubmit> questionSubmitWrapper = new LambdaQueryWrapper<>();
         questionSubmitWrapper.eq(QuestionSubmit::getQuestionId, questionId);
         // 查询用户自己的答题记录
-        User loginUser = userService.getLoginUserOrThrow(request);
+        User loginUser = userService.getLoginUser(request);
+        if (loginUser == null) {
+            return new ArrayList<>();
+        }
         questionSubmitWrapper.eq(QuestionSubmit::getUserId, loginUser.getId());
         questionSubmitWrapper.orderByDesc(QuestionSubmit::getCreateTime);
         List<QuestionSubmit> questionSubmitList = this.list(questionSubmitWrapper);

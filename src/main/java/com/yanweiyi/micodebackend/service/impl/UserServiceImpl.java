@@ -91,11 +91,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String encryptPassword = DigestUtils.md5DigestAsHex(password.getBytes());
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getUsername, username);
+        User usernaemUser = this.getOne(queryWrapper);
+        if (usernaemUser == null) {
+            throw new BusinessException(ApiStatusCode.NOT_FOUND_ERROR, "用户不存在");
+        }
         queryWrapper.eq(User::getPassword, encryptPassword);
         User user = this.getOne(queryWrapper);
 
         if (user == null) {
-            throw new BusinessException(ApiStatusCode.NOT_FOUND_ERROR, "用户不存在");
+            throw new BusinessException(ApiStatusCode.NOT_FOUND_ERROR, "用户名或密码错误");
         }
         // 记住用户的登录态
         request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);

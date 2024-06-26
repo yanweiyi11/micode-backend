@@ -133,7 +133,7 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>com.yanweiyi.micodebackend.MicodeBackendApplication</mainClass>
-                    <skip>true</skip>
+                    <skip>false</skip>
                 </configuration>
                 <executions>
                     <execution>
