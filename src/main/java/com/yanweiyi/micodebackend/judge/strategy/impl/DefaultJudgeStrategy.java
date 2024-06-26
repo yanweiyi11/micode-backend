@@ -3,7 +3,7 @@ package com.yanweiyi.micodebackend.judge.strategy.impl;
 import cn.hutool.json.JSONUtil;
 import com.yanweiyi.micodebackend.judge.model.dto.JudgeConfig;
 import com.yanweiyi.micodebackend.judge.model.dto.JudgeInfo;
-import com.yanweiyi.micodebackend.judge.model.enums.JudgeInfoMessageEnum;
+import com.yanweiyi.micodebackend.judge.model.enums.JudgeInfoResultEnum;
 import com.yanweiyi.micodebackend.judge.strategy.JudgeStrategy;
 import com.yanweiyi.micodebackend.judge.strategy.model.JudgeContext;
 import com.yanweiyi.micodebackend.model.entity.Question;
@@ -38,13 +38,13 @@ public class DefaultJudgeStrategy implements JudgeStrategy {
 
         // 处理判断逻辑
         if (expectedOutputList.size() != actualOutputList.size()) { // 先判断输出个数是否一致
-            resultJudgeInfo.setResult(JudgeInfoMessageEnum.WRONG_ANSWER.getValue());
+            resultJudgeInfo.setResult(JudgeInfoResultEnum.WRONG_ANSWER.getValue());
         } else {
             for (int i = 0; i < expectedOutputList.size(); i++) { // 再逐个判断是否相等
                 String eOpt = expectedOutputList.get(i);
                 String aOpt = actualOutputList.get(i);
                 if (!eOpt.equals(aOpt)) {
-                    resultJudgeInfo.setResult(JudgeInfoMessageEnum.WRONG_ANSWER.getValue());
+                    resultJudgeInfo.setResult(JudgeInfoResultEnum.WRONG_ANSWER.getValue());
                     String format = String.format("预期输出：%s，实际输出：%s",
                             ArrayUtils.toString(eOpt), ArrayUtils.toString(aOpt));
                     resultJudgeInfo.setErrorMessage(format);
@@ -53,14 +53,14 @@ public class DefaultJudgeStrategy implements JudgeStrategy {
             }
             // 判断是否符合题目预设限制
             if (maxMemoryUsed < 0 || maxTimeUsed < 0) {
-                resultJudgeInfo.setResult(JudgeInfoMessageEnum.RUNTIME_ERROR.getValue());
+                resultJudgeInfo.setResult(JudgeInfoResultEnum.RUNTIME_ERROR.getValue());
             } else if (maxTimeUsed > presetTimeLimit) {
-                resultJudgeInfo.setResult(JudgeInfoMessageEnum.TIME_LIMIT_EXCEEDED.getValue());
+                resultJudgeInfo.setResult(JudgeInfoResultEnum.TIME_LIMIT_EXCEEDED.getValue());
             } else if (maxMemoryUsed > presetMemoryLimit) {
-                resultJudgeInfo.setResult(JudgeInfoMessageEnum.MEMORY_LIMIT_EXCEEDED.getValue());
+                resultJudgeInfo.setResult(JudgeInfoResultEnum.MEMORY_LIMIT_EXCEEDED.getValue());
             } else {
                 // 如果以上判断都通过，则认为答案正确
-                resultJudgeInfo.setResult(JudgeInfoMessageEnum.ACCEPTED.getValue());
+                resultJudgeInfo.setResult(JudgeInfoResultEnum.ACCEPTED.getValue());
             }
         }
         return resultJudgeInfo;

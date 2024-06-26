@@ -1,33 +1,16 @@
-server:
-  port: 11091
-  servlet:
-    context-path: /api
-    session:
-      cookie:
-        max-age: 2592000 # Cookie 30 天过期
-        domain: localhost
-        path: /
 spring:
-  application:
-    name: micode-backend
-  profiles:
-    active: dev
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher # 支持 swagger 3
-  session:
-    store-type: redis
-    timeout: 2592000 # Session 30 天过期
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/micode_db?useSSL=false
+    url: jdbc:mysql://gz-cynosdbmysql-grp-myj266u1.sql.tencentcdb.com:22094/micode_db?useSSL=false
     username: root
-    password: root
+    password: anEii020827.
   redis:
     database: 2
-    host: localhost
-    port: 6379
+    host: redis-10023.c290.ap-northeast-1-2.ec2.redns.redis-cloud.com
+    port: 10023
     timeout: 5000
+    username: default
+    password: RUJJVrnJ5Pj7YSNBFCvvh78BaL7GrUX1
   rabbitmq:
     host: localhost
     port: 5672

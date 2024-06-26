@@ -2,6 +2,9 @@ package com.yanweiyi.micodebackend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.yanweiyi.micodebackend.model.entity.QuestionSubmit;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @author yanweiyi
@@ -10,6 +13,8 @@ import com.yanweiyi.micodebackend.model.entity.QuestionSubmit;
  * @Entity com.yanweiyi.micodebackend.model.entity.QuestionSubmit
  */
 public interface QuestionSubmitMapper extends BaseMapper<QuestionSubmit> {
+
+    List<QuestionSubmit> selectLastQuestionSubmitList(@Param("userId") long userId);
 
 }
 

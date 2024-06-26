@@ -21,22 +21,6 @@
         <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
     </resultMap>
 
-    <resultMap id="QuestionDetailResultMap" type="com.yanweiyi.micodebackend.model.entity.QuestionDetail">
-        <id property="id" column="id" jdbcType="BIGINT"/>
-        <result property="title" column="title" jdbcType="VARCHAR"/>
-        <result property="content" column="content" jdbcType="VARCHAR"/>
-        <result property="tagsStr" column="tags" jdbcType="VARCHAR"/>
-        <result property="answer" column="answer" jdbcType="VARCHAR"/>
-        <result property="difficulty" column="difficulty" jdbcType="INTEGER"/>
-        <result property="submitNum" column="submitNum" jdbcType="INTEGER"/>
-        <result property="acceptedNum" column="acceptedNum" jdbcType="INTEGER"/>
-        <result property="judgeConfigStr" column="judgeConfig" jdbcType="VARCHAR"/>
-        <result property="status" column="status" jdbcType="VARCHAR"/>
-        <result property="judgeInfoStr" column="judgeInfo" jdbcType="VARCHAR"/>
-        <result property="userId" column="userId" jdbcType="BIGINT"/>
-        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
-    </resultMap>
-
     <sql id="Base_Column_List">
         id,title,content,
         tags,answer,difficulty,
@@ -45,83 +29,4 @@
         updateTime,isDelete
     </sql>
 
-    <sql id="Question_Dynamic_Search_Filter">
-        <!-- 动态查询条件 -->
-        <where>
-            <!-- 搜索关键字条件 -->
-            <if test="queryRequest.searchKey != null and queryRequest.searchKey != ''">
-                AND (
-                q.title LIKE CONCAT('%', #{queryRequest.searchKey}, '%') OR
-                q.content LIKE CONCAT('%', #{queryRequest.searchKey}, '%') OR
-                <if test="queryRequest.searchKey.matches('\\d+')">
-                    q.id LIKE CONCAT('%', #{queryRequest.searchKey}, '%')
-                </if>
-                )
-            </if>
-            <!-- 标签过滤条件 -->
-            <if test="queryRequest.tags != null and !queryRequest.tags.isEmpty()">
-                AND (
-                <foreach collection="queryRequest.tags" item="tag" separator="OR">
-                    q.tags LIKE CONCAT('%', #{tag}, '%')
-                </foreach>
-                )
-            </if>
-            <!-- 难度匹配条件 -->
-            <if test="queryRequest.difficulty != null and queryRequest.difficulty != ''">
-                AND q.difficulty = #{queryRequest.difficulty}
-            </if>
-            <!-- 状态匹配条件 -->
-            <if test="queryRequest.status != null">
-                AND qb.`status` = #{queryRequest.status}
-            </if>
-            <if test="queryRequest.judgeInfoResult != null and queryRequest.judgeInfoResult != ''">
-                AND qb.judgeInfo LIKE CONCAT('%', #{queryRequest.judgeInfoResult}, '%')
-            </if>
-        </where>
-        <!-- 排序条件 -->
-        <if test="queryRequest.sort != null and queryRequest.sort != ''">
-            ORDER BY q.${queryRequest.sort}
-        </if>
-        <if test="queryRequest.order != null and queryRequest.order !=''">
-            ${queryRequest.order}
-        </if>
-    </sql>
-
-    <sql id="Select_Question_VO_Database">
-        SELECT q.id,
-               q.title,
-               q.content,
-               q.tags,
-               q.answer,
-               q.acceptedNum,
-               q.submitNum,
-               q.difficulty,
-               q.judgeConfig,
-               q.userId,
-               qb.`status`,
-               qb.judgeInfo,
-               q.createTime
-        FROM question AS q
-                 LEFT JOIN (SELECT qs.questionId,
-                                   qs.`status`,
-                                   qs.judgeInfo,
-                                   qs.createTime
-                            FROM question_submit AS qs
-                                     INNER JOIN (SELECT questionId,
-                                                        MAX(createTime) AS MaxCreateTime
-                                                 FROM question_submit
-                                                 GROUP BY questionId) AS qsm
-                                                ON qs.questionId = qsm.questionId AND qs.createTime = qsm.MaxCreateTime) AS qb
-                           ON q.id = qb.questionId
-    </sql>
-
-    <select id="selectQuestionDetailByPage" resultMap="QuestionDetailResultMap">
-        <include refid="Select_Question_VO_Database"/>
-        <include refid="Question_Dynamic_Search_Filter"/>
-    </select>
-
-    <select id="selectQuestionDetailById" resultMap="QuestionDetailResultMap">
-        <include refid="Select_Question_VO_Database"/>
-        WHERE q.id = #{questionId}
-    </select>
 </mapper>

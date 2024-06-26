@@ -11,8 +11,8 @@ import com.yanweiyi.micodebackend.judge.model.dto.JudgeConfig;
 import com.yanweiyi.micodebackend.judge.model.dto.JudgeInfo;
 import com.yanweiyi.micodebackend.judge.service.JudgeService;
 import com.yanweiyi.micodebackend.model.dto.questionsubmit.QuestionSubmitAddRequest;
-import com.yanweiyi.micodebackend.model.dto.questionsubmit.QuestionSubmitDoJudgeRequest;
 import com.yanweiyi.micodebackend.model.dto.questionsubmit.QuestionSubmitDetailQueryRequest;
+import com.yanweiyi.micodebackend.model.dto.questionsubmit.QuestionSubmitDoJudgeRequest;
 import com.yanweiyi.micodebackend.model.dto.questionsubmit.QuestionSubmitUpdateRequest;
 import com.yanweiyi.micodebackend.model.entity.Question;
 import com.yanweiyi.micodebackend.model.entity.QuestionSubmit;
@@ -20,6 +20,7 @@ import com.yanweiyi.micodebackend.model.entity.User;
 import com.yanweiyi.micodebackend.model.enums.QuestionSubmitStatusEnum;
 import com.yanweiyi.micodebackend.model.vo.QuestionSubmitDetailVO;
 import com.yanweiyi.micodebackend.model.vo.QuestionSubmitVO;
+import com.yanweiyi.micodebackend.rabbitmq.MessageProducer;
 import com.yanweiyi.micodebackend.service.QuestionService;
 import com.yanweiyi.micodebackend.service.QuestionSubmitService;
 import com.yanweiyi.micodebackend.service.UserService;
@@ -30,7 +31,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author yanweiyi
@@ -51,12 +51,15 @@ public class QuestionSubmitController {
     @Resource
     private JudgeService judgeService;
 
+    @Resource
+    private MessageProducer messageProducer;
+
     @PostMapping("/do-judge")
     public ApiResponse<Long> doJudge(@RequestBody QuestionSubmitDoJudgeRequest doJudgeRequest, HttpServletRequest request) {
         if (doJudgeRequest == null) {
             throw new BusinessException(ApiStatusCode.PARAMS_ERROR);
         }
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userService.getLoginUserOrThrow(request);
         QuestionSubmit questionSubmit = new QuestionSubmit();
         BeanUtils.copyProperties(doJudgeRequest, questionSubmit);
         // 判断题目是否存在
@@ -75,9 +78,7 @@ public class QuestionSubmitController {
         }
         // 执行判题服务
         Long questionSubmitId = questionSubmit.getId();
-        CompletableFuture.runAsync(() -> {
-            judgeService.doJudge(questionSubmitId);
-        });
+        messageProducer.sendMessage("judge_exchange", "miRoutingKey", questionSubmitId);
         return ResultUtils.success(questionSubmitId);
     }
 
@@ -89,7 +90,7 @@ public class QuestionSubmitController {
         QuestionSubmit questionSubmit = new QuestionSubmit();
         BeanUtils.copyProperties(addRequest, questionSubmit);
 
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userService.getLoginUserOrThrow(request);
         questionSubmit.setUserId(loginUser.getId());
 
         JudgeConfig judgeInfoJson = addRequest.getJudgeInfo();
@@ -117,7 +118,7 @@ public class QuestionSubmitController {
             throw new BusinessException(ApiStatusCode.NOT_FOUND_ERROR);
         }
         // 仅本人或管理员可删除
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userService.getLoginUserOrThrow(request);
         Long userId = loginUser.getId(); // 当前登录用户 id
         Long creatorId = questionSubmit.getUserId(); // 创建者 id
         if (!creatorId.equals(userId) && !userService.isAdmin(loginUser)) {
@@ -138,7 +139,7 @@ public class QuestionSubmitController {
             throw new BusinessException(ApiStatusCode.NOT_FOUND_ERROR);
         }
         // 仅本人或管理员可更改
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userService.getLoginUserOrThrow(request);
         Long userId = loginUser.getId();
         Long creatorId = questionSubmit.getUserId();
         if (!creatorId.equals(userId) && !userService.isAdmin(loginUser)) {

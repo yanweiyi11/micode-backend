@@ -23,4 +23,16 @@
         userId,createTime,updateTime,
         isDelete
     </sql>
+
+    <select id="selectLastQuestionSubmitList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM question_submit
+        WHERE id IN (
+        SELECT MAX(id) AS id
+        FROM question_submit
+        WHERE userId = #{userId}
+        GROUP BY questionId
+        )
+    </select>
 </mapper>

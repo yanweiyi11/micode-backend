@@ -104,7 +104,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         String sort = queryRequest.getSort();
         String order = queryRequest.getOrder();
 
-        // 构建问题提交查询Wrapper
+        // 构建题目提交查询Wrapper
         LambdaQueryWrapper<QuestionSubmit> questionSubmitWrapper = new LambdaQueryWrapper<>();
         if (CollectionUtil.isNotEmpty(languageList)) {
             // 如果语言列表非空，添加语言过滤条件
@@ -124,7 +124,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
             questionSubmitWrapper.orderByDesc(getSortField(sort));
         }
 
-        // 用户和问题的查询Wrapper
+        // 用户和题目的查询Wrapper
         LambdaQueryWrapper<User> userWrapper = new LambdaQueryWrapper<>();
         LambdaQueryWrapper<Question> questionWrapper = new LambdaQueryWrapper<>();
 
@@ -132,7 +132,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         if (StringUtils.isNotEmpty(searchKey)) {
             // 如果搜索关键字非空，进行相关搜索
             if (NumberUtil.isNumber(searchKey)) {
-                // 如果是数字，则按问题ID进行过滤，并使用or连接条件
+                // 如果是数字，则按题目ID进行过滤，并使用or连接条件
                 questionSubmitWrapper.like(QuestionSubmit::getQuestionId, Long.parseLong(searchKey)).or();
             }
 
@@ -154,7 +154,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
             questionWrapper.like(Question::getTitle, searchKey);
             questionList = questionService.list(questionWrapper);
             if (!questionList.isEmpty()) {
-                // 如果找到问题，使用or连接条件
+                // 如果找到题目，使用or连接条件
                 questionSubmitWrapper.or(i -> {
                     questionList.forEach(question -> {
                         i.eq(QuestionSubmit::getQuestionId, question.getId()).or();
@@ -165,7 +165,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
             }
         }
 
-        // 分页查询问题提交记录
+        // 分页查询题目提交记录
         Page<QuestionSubmit> questionSubmitPage = this.page(new Page<>(page, size), questionSubmitWrapper);
         List<QuestionSubmit> questionSubmitList = questionSubmitPage.getRecords();
         Page<QuestionSubmitDetailVO> questionSubmitDetailVOPage = new Page<>(page, size, questionSubmitPage.getTotal());
@@ -199,7 +199,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         LambdaQueryWrapper<QuestionSubmit> questionSubmitWrapper = new LambdaQueryWrapper<>();
         questionSubmitWrapper.eq(QuestionSubmit::getQuestionId, questionId);
         // 查询用户自己的答题记录
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userService.getLoginUserOrThrow(request);
         questionSubmitWrapper.eq(QuestionSubmit::getUserId, loginUser.getId());
         questionSubmitWrapper.orderByDesc(QuestionSubmit::getCreateTime);
         List<QuestionSubmit> questionSubmitList = this.list(questionSubmitWrapper);

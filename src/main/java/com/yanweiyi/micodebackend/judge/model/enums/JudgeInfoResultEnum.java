@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * @author yanweiyi
  */
 @Getter
-public enum JudgeInfoMessageEnum {
+public enum JudgeInfoResultEnum {
 
     ACCEPTED("执行通过"),
     COMPILE_ERROR("编译失败"),
@@ -28,7 +28,7 @@ public enum JudgeInfoMessageEnum {
 
     private final String value;
 
-    JudgeInfoMessageEnum(String value) {
+    JudgeInfoResultEnum(String value) {
         this.value = value;
     }
 
@@ -40,17 +40,17 @@ public enum JudgeInfoMessageEnum {
      * 获取值列表
      */
     public static List<String> getValues() {
-        return Arrays.stream(values()).map(JudgeInfoMessageEnum::getValue).collect(Collectors.toList());
+        return Arrays.stream(values()).map(JudgeInfoResultEnum::getValue).collect(Collectors.toList());
     }
 
     /**
      * 根据 message 获取枚举
      */
-    public static JudgeInfoMessageEnum getEnumByMessage(String message) {
+    public static JudgeInfoResultEnum getEnumByMessage(String message) {
         if (message == null || message.isEmpty()) {
             return null;
         }
-        for (JudgeInfoMessageEnum anEnum : JudgeInfoMessageEnum.values()) {
+        for (JudgeInfoResultEnum anEnum : JudgeInfoResultEnum.values()) {
             if (anEnum.value.equals(message)) {
                 return anEnum;
             }

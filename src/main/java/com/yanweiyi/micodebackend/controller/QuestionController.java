@@ -53,7 +53,7 @@ public class QuestionController {
         }
 
         // 获取当前登录用户信息
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userService.getLoginUserOrThrow(request);
 
         // 创建对象并拷贝数据
         Question question = new Question();
@@ -106,7 +106,7 @@ public class QuestionController {
         }
 
         // 检查权限：只有问题创建者和管理员能删除问题
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userService.getLoginUserOrThrow(request);
         Long userId = loginUser.getId(); // 当前用户 id
         Long creatorId = question.getUserId(); // 创建者 id
         if (!creatorId.equals(userId) && !userService.isAdmin(loginUser)) {
@@ -134,7 +134,7 @@ public class QuestionController {
         }
 
         // 只有问题创建者或管理员才能更新问题
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userService.getLoginUserOrThrow(request);
         Long userId = loginUser.getId();
         Long creatorId = question.getUserId();
         if (!creatorId.equals(userId) && !userService.isAdmin(loginUser)) {

@@ -115,8 +115,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String userRole = updateRequest.getUserRole();
 
         // 仅管理员和本人可更改
-        User loginUser = this.getLoginUser(request);
-        if (!loginUser.getId().equals(updateId) || !this.isAdmin(loginUser)) {
+        User loginUser = this.getLoginUserOrThrow(request);
+        if (!loginUser.getId().equals(updateId) && !this.isAdmin(loginUser)) {
             throw new BusinessException(ApiStatusCode.NO_AUTH_ERROR);
         }
 
@@ -151,9 +151,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 获取当前登录用户
      */
     @Override
-    public User getLoginUser(HttpServletRequest request) {
+    public User getLoginUserOrThrow(HttpServletRequest request) {
         // 从 session 中获取用户对象
-        User loginUser = getLoginUserNotErr(request);
+        User loginUser = getLoginUser(request);
         // 判断是否已登录
         if (loginUser == null || loginUser.getId() == null) {
             throw new BusinessException(ApiStatusCode.NOT_LOGIN_ERROR);
@@ -170,7 +170,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 获取当前登录用户
      */
     @Override
-    public User getLoginUserNotErr(HttpServletRequest request) {
+    public User getLoginUser(HttpServletRequest request) {
         return (User) request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
     }
 
@@ -181,7 +181,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public boolean isAdmin(HttpServletRequest request) {
-        User loginUser = this.getLoginUser(request);
+        User loginUser = this.getLoginUserOrThrow(request);
         return UserRoleEnum.ADMIN.getValue().equals(loginUser.getUserRole());
     }
 

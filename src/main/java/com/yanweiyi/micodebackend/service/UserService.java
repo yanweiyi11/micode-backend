@@ -43,14 +43,14 @@ public interface UserService extends IService<User> {
     Boolean checkLogin(HttpServletRequest request);
 
     /**
+     * 获取当前登录用户，如果为空，不会报错
+     */
+    User getLoginUserOrThrow(HttpServletRequest request);
+
+    /**
      * 获取当前登录用户
      */
     User getLoginUser(HttpServletRequest request);
-
-    /**
-     * 获取当前登录用户，如果为空，不会报错
-     */
-    User getLoginUserNotErr(HttpServletRequest request);
 
     /**
      * 判断当前用户是否为管理员（根据用户对象）

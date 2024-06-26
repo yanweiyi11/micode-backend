@@ -12,7 +12,7 @@ import com.yanweiyi.micodebackend.judge.codesandbox.model.ExecuteCodeResponse;
 import com.yanweiyi.micodebackend.judge.codesandbox.model.enums.ExecuteInfoEnum;
 import com.yanweiyi.micodebackend.judge.model.dto.JudgeCase;
 import com.yanweiyi.micodebackend.judge.model.dto.JudgeInfo;
-import com.yanweiyi.micodebackend.judge.model.enums.JudgeInfoMessageEnum;
+import com.yanweiyi.micodebackend.judge.model.enums.JudgeInfoResultEnum;
 import com.yanweiyi.micodebackend.judge.service.JudgeService;
 import com.yanweiyi.micodebackend.judge.strategy.JudgeStrategy;
 import com.yanweiyi.micodebackend.judge.strategy.impl.DefaultJudgeStrategy;
@@ -124,9 +124,7 @@ public class JudgeServiceImpl implements JudgeService {
 
         // 执行代码沙箱
         ExecuteCodeResponse executeCodeResponse;
-        synchronized (this) {
-            executeCodeResponse = codeSandbox.executeCode(executeCodeRequest);
-        }
+        executeCodeResponse = codeSandbox.executeCode(executeCodeRequest);
         // 获取执行结果
         List<String> actualOutputList = executeCodeResponse.getOutputList();
         String errorMessage = executeCodeResponse.getErrorMessage();
@@ -161,7 +159,7 @@ public class JudgeServiceImpl implements JudgeService {
             JudgeInfo resultJudgeInfo = judgeStrategy.applyJudgeStrategy(judgeContext);
 
             String judgeResult = resultJudgeInfo.getResult();
-            if (judgeResult.equals(JudgeInfoMessageEnum.ACCEPTED.getValue())) {
+            if (judgeResult.equals(JudgeInfoResultEnum.ACCEPTED.getValue())) {
                 // 题目的通过数量 + 1
                 synchronized (this) {
                     Integer acceptedNum = question.getAcceptedNum();
@@ -207,15 +205,15 @@ public class JudgeServiceImpl implements JudgeService {
         failJudgeInfo.setErrorMessage(errorMessage);
         // 分析失败原因
         if (ExecuteInfoEnum.COMPILE_ERROR.equalsValue(status)) {
-            failJudgeInfo.setResult(JudgeInfoMessageEnum.COMPILE_ERROR.getValue());
+            failJudgeInfo.setResult(JudgeInfoResultEnum.COMPILE_ERROR.getValue());
         } else if (ExecuteInfoEnum.EXECUTION_TIMEOUT.equalsValue(status)) {
-            failJudgeInfo.setResult(JudgeInfoMessageEnum.TIME_LIMIT_EXCEEDED.getValue());
+            failJudgeInfo.setResult(JudgeInfoResultEnum.TIME_LIMIT_EXCEEDED.getValue());
         } else if (ExecuteInfoEnum.EXECUTION_ERROR.equalsValue(status)) {
-            failJudgeInfo.setResult(JudgeInfoMessageEnum.RUNTIME_ERROR.getValue());
+            failJudgeInfo.setResult(JudgeInfoResultEnum.RUNTIME_ERROR.getValue());
         } else if (ExecuteInfoEnum.SYSTEM_ERROR.equalsValue(status)) {
-            failJudgeInfo.setResult(JudgeInfoMessageEnum.SYSTEM_ERROR.getValue());
+            failJudgeInfo.setResult(JudgeInfoResultEnum.SYSTEM_ERROR.getValue());
         } else if (ExecuteInfoEnum.MEMORY_OVERFLOW.equalsValue(status)) {
-            failJudgeInfo.setResult(JudgeInfoMessageEnum.MEMORY_LIMIT_EXCEEDED.getValue());
+            failJudgeInfo.setResult(JudgeInfoResultEnum.MEMORY_LIMIT_EXCEEDED.getValue());
         }
         return failJudgeInfo;
     }

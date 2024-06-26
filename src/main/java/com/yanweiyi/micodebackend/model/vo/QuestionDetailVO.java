@@ -1,7 +1,9 @@
 package com.yanweiyi.micodebackend.model.vo;
 
+import cn.hutool.json.JSONUtil;
 import com.yanweiyi.micodebackend.judge.model.dto.JudgeConfig;
 import com.yanweiyi.micodebackend.judge.model.dto.JudgeInfo;
+import com.yanweiyi.micodebackend.model.entity.Question;
 import lombok.Data;
 
 import java.util.Date;
@@ -77,4 +79,17 @@ public class QuestionDetailVO {
      */
     private Date createTime;
 
+    public void copyByQuestion(Question question) {
+        this.setId(question.getId());
+        this.setTitle(question.getTitle());
+        this.setContent(question.getContent());
+        this.setTags(JSONUtil.toList(question.getTags(), String.class));
+        this.setAnswer(question.getAnswer());
+        this.setDifficulty(question.getDifficulty());
+        this.setSubmitNum(question.getSubmitNum());
+        this.setAcceptedNum(getAcceptedNum());
+        this.setJudgeConfig(JSONUtil.toBean(question.getJudgeConfig(), JudgeConfig.class));
+        this.setUserId(question.getUserId());
+        this.setCreateTime(question.getCreateTime());
+    }
 }

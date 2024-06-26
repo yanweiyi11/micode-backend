@@ -83,7 +83,7 @@ public class UserController {
             throw new BusinessException(ApiStatusCode.PARAMS_ERROR);
         }
 
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userService.getLoginUserOrThrow(request);
 
         // 拷贝数据
         User user = new User();
@@ -178,7 +178,7 @@ public class UserController {
             throw new BusinessException(ApiStatusCode.NOT_FOUND_ERROR);
         }
         // 仅本人和管理员可查看
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userService.getLoginUserOrThrow(request);
         Long loginUserId = loginUser.getId();
         Long queryUserId = queryUser.getId();
         if (!queryUserId.equals(loginUserId) && !userService.isAdmin(loginUser)) {

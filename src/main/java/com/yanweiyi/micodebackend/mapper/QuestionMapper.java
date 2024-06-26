@@ -1,12 +1,7 @@
 package com.yanweiyi.micodebackend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yanweiyi.micodebackend.model.dto.question.QuestionDetailQueryRequest;
 import com.yanweiyi.micodebackend.model.entity.Question;
-import com.yanweiyi.micodebackend.model.entity.QuestionDetail;
-import org.apache.ibatis.annotations.Param;
 
 /**
  * @author yanweiyi
@@ -16,11 +11,4 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface QuestionMapper extends BaseMapper<Question> {
 
-    IPage<QuestionDetail> selectQuestionDetailByPage(Page<?> page,
-                                                     @Param("queryRequest") QuestionDetailQueryRequest queryRequest);
-
-    QuestionDetail selectQuestionDetailById(@Param("questionId") Long questionId);
 }
-
-
-
