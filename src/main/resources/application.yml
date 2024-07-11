@@ -5,8 +5,7 @@ server:
     session:
       cookie:
         max-age: 2592000 # Cookie 30 天过期
-        domain: localhost
-        path: /
+        path: /api
 spring:
   application:
     name: micode-backend

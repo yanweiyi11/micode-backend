@@ -175,7 +175,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public User getLoginUser(HttpServletRequest request) {
-        return (User) request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        User loginUser = (User) request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        if (loginUser != null){
+            // 从数据库重查用户信息，保证最新用户数据
+            loginUser = this.getById(loginUser.getId());
+            if (loginUser == null) {
+                throw new BusinessException(ApiStatusCode.NOT_LOGIN_ERROR);
+            }
+        }
+        return loginUser;
     }
 
     @Override

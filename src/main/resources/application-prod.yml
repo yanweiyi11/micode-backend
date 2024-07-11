@@ -1,16 +1,21 @@
+# 线上配置文件
+server:
+  port: 8300
 spring:
+  # 数据库配置
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://gz-cynosdbmysql-grp-myj266u1.sql.tencentcdb.com:22094/micode_db?useSSL=false
     username: root
     password: anEii020827.
+  # Redis 配置
   redis:
-    database: 0
-    host: redis-10023.c290.ap-northeast-1-2.ec2.redns.redis-cloud.com
-    port: 10023
+    database: 2
+    host: 8.219.222.88
+    port: 6379
     timeout: 5000
-    username: default
-    password: RUJJVrnJ5Pj7YSNBFCvvh78BaL7GrUX1
+    password: anEii020827.
+  # RabbitMQ 配置
   rabbitmq:
     host: 8.219.222.88
     port: 5672
@@ -19,3 +24,13 @@ spring:
 # 代码沙箱配置
 codesandbox:
   type: remote
+mybatis-plus:
+  configuration:
+    # 生产环境关闭日志
+    log-impl: ''
+# 接口文档配置
+knife4j:
+  basic:
+    enable: true
+    username: root
+    password: root
