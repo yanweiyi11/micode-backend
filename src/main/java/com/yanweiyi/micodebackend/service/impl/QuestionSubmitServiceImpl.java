@@ -132,36 +132,28 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         if (StringUtils.isNotEmpty(searchKey)) {
             // 如果搜索关键字非空，进行相关搜索
             if (NumberUtil.isNumber(searchKey)) {
-                // 如果是数字，则按题目ID进行过滤，并使用or连接条件
-                questionSubmitWrapper.like(QuestionSubmit::getQuestionId, Long.parseLong(searchKey)).or();
+                // 如果是数字，则按题目ID进行过滤
+                questionSubmitWrapper.like(QuestionSubmit::getQuestionId, Long.parseLong(searchKey));
             }
 
             // 按用户名搜索
             userWrapper.like(User::getUsername, searchKey);
             List<User> userList = userService.list(userWrapper);
             if (!userList.isEmpty()) {
-                // 如果找到用户，使用or连接条件
-                questionSubmitWrapper.or(i -> {
-                    userList.forEach(user -> {
-                        i.eq(QuestionSubmit::getUserId, user.getId()).or();
-                    });
-                    // 移除最后一个多余的 or
-                    i.last("1=1");
-                });
+                // 如果找到用户
+                for (User user : userList) {
+                    questionSubmitWrapper.eq(QuestionSubmit::getUserId, user.getId());
+                }
             }
 
             // 按题目标题搜索
             questionWrapper.like(Question::getTitle, searchKey);
             questionList = questionService.list(questionWrapper);
             if (!questionList.isEmpty()) {
-                // 如果找到题目，使用or连接条件
-                questionSubmitWrapper.or(i -> {
-                    questionList.forEach(question -> {
-                        i.eq(QuestionSubmit::getQuestionId, question.getId()).or();
-                    });
-                    // 移除最后一个多余的or
-                    i.last("1=1");
-                });
+                // 如果找到题目
+                for (Question question : questionList) {
+                    questionSubmitWrapper.eq(QuestionSubmit::getQuestionId, question.getId());
+                }
             }
         }
 

@@ -82,7 +82,7 @@ public class QuestionVO {
         this.setAnswer(question.getAnswer());
         this.setDifficulty(question.getDifficulty());
         this.setSubmitNum(question.getSubmitNum());
-        this.setAcceptedNum(getAcceptedNum());
+        this.setAcceptedNum(question.getAcceptedNum());
         this.setJudgeCase(JSONUtil.toList(question.getJudgeCase(), JudgeCase.class));
         this.setJudgeConfig(JSONUtil.toBean(question.getJudgeConfig(), JudgeConfig.class));
         this.setUserId(question.getUserId());

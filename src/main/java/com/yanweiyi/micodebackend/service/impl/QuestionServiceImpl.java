@@ -88,15 +88,54 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         int page = queryRequest.getPage();
         int size = queryRequest.getSize();
 
+        // 查题目 / 内容 / 编号
+        LambdaQueryWrapper<Question> questionWrapper = new LambdaQueryWrapper<>();
+        String searchKey = queryRequest.getSearchKey();
+        // 创建条件构造器
+        if (StringUtils.isNotEmpty(searchKey)) {
+            // 为搜索关键字创建OR条件查询
+            questionWrapper.nested(wrapper -> {
+                if (NumberUtil.isNumber(searchKey)) {
+                    wrapper.like(Question::getId, Long.parseLong(searchKey)).or();
+                }
+                wrapper.or().like(Question::getTitle, searchKey);
+                wrapper.or().like(Question::getContent, searchKey);
+            });
+        }
+        List<String> tags = queryRequest.getTags();
+        if (CollectionUtil.isNotEmpty(tags)) {
+            // 遍历标签列表，为每个标签创建LIKE查询条件
+            for (String tag : tags) {
+                questionWrapper.like(Question::getTags, tag);
+            }
+        }
+        String difficulty = queryRequest.getDifficulty();
+        questionWrapper.eq(StringUtils.isNotBlank(difficulty), Question::getDifficulty, difficulty);
+
+        String judgeInfoResult = queryRequest.getJudgeInfoResult();
+        Integer status = queryRequest.getStatus();
+
+        String sort = queryRequest.getSort();
+        String order = queryRequest.getOrder();
+        // 为难度等级添加查询条件
+        questionWrapper.eq(StringUtils.isNotEmpty(difficulty), Question::getDifficulty, difficulty);
+        // 设置排序方式
+        if (SortOrderConstant.SORT_ORDER_ASC.equals(order)) {
+            questionWrapper.orderByAsc(getSortField(sort));
+        } else if (SortOrderConstant.SORT_ORDER_DESC.equals(order)) {
+            questionWrapper.orderByDesc(getSortField(sort));
+        }
+
         // 获取当前登录用户
         User loginUser = userService.getLoginUser(request);
 
         // 需要查询题目的基本信息
-        Page<Question> questionPage = this.page(new Page<>(page, size), null);
+        Page<Question> questionPage = this.page(new Page<>(page, size), questionWrapper);
         List<Question> questionList = questionPage.getRecords();
         Map<Long, QuestionSubmit> questionSubmitMap = null;
         if (loginUser != null) {
-            List<QuestionSubmit> questionSubmitList = questionSubmitMapper.selectLastQuestionSubmitList(loginUser.getId());
+            Long loginUserId = loginUser.getId();
+            List<QuestionSubmit> questionSubmitList = questionSubmitMapper.selectLastQuestionSubmitList(loginUserId);
             questionSubmitMap = questionSubmitList.stream()
                     .collect(Collectors.toMap(QuestionSubmit::getQuestionId, questionSubmit -> questionSubmit));
         }
@@ -111,22 +150,36 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
                 questionDetailVO.setStatus(null);
             } else {
                 // 如果用户已登录，并且已提交过此题目
+                Long loginUserId = loginUser.getId();
                 QuestionSubmit questionSubmit = questionSubmitMap.get(question.getId());
                 if (questionSubmit != null) {
+                    // 如果查询条件选择了判题结果，则需要判断是否和查询条件一致
+                    JudgeInfo dbJudgeInfo = JSONUtil.toBean(questionSubmit.getJudgeInfo(), JudgeInfo.class);
+                    String dbResult = dbJudgeInfo.getResult();
+                    Integer dbStatus = questionSubmit.getStatus();
+                    if (StringUtils.isNotBlank(judgeInfoResult) && !judgeInfoResult.equals(dbResult)) {
+                        continue;
+                    }
+                    // 如果查询条件选择了状态，则需要判断是否和查询条件一致
+                    if (status != null && !status.equals(dbStatus)) {
+                        continue;
+                    }
                     // 设置给对应题目的提交状态、提交状态
-                    questionDetailVO.setJudgeInfo(JSONUtil.toBean(questionSubmit.getJudgeInfo(), JudgeInfo.class));
-                    questionDetailVO.setStatus(questionSubmit.getStatus());
+                    questionDetailVO.setJudgeInfo(dbJudgeInfo);
+                    questionDetailVO.setStatus(dbStatus);
                     // 如果用户不是管理员和题目创建者，需要把没有写对的题目答案置空
-                    JudgeInfo judgeInfo = JSONUtil.toBean(questionSubmit.getJudgeInfo(), JudgeInfo.class);
-                    String result = judgeInfo.getResult();
                     if (!userService.isAdmin(loginUser) &&
-                            !question.getUserId().equals(loginUser.getId()) &&
-                            !JudgeInfoResultEnum.ACCEPTED.equalsValue(result)) {
+                            !question.getUserId().equals(loginUserId) &&
+                            !JudgeInfoResultEnum.ACCEPTED.equalsValue(dbResult)) {
                         questionDetailVO.setAnswer(null);
                     }
                 } else {
                     // 如果用户未提交过此题目
-                    if (!userService.isAdmin(loginUser) && !question.getUserId().equals(loginUser.getId())) {
+                    // 如果查询条件选择了判题结果或者状态，则需要跳过
+                    if (StringUtils.isNotBlank(judgeInfoResult) || status != null) {
+                        continue;
+                    }
+                    if (!userService.isAdmin(loginUser) && !question.getUserId().equals(loginUserId)) {
                         // 如果不是管理员和题目创建者则置空答案
                         questionDetailVO.setAnswer(null);
                     }

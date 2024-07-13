@@ -87,7 +87,7 @@ public class QuestionDetailVO {
         this.setAnswer(question.getAnswer());
         this.setDifficulty(question.getDifficulty());
         this.setSubmitNum(question.getSubmitNum());
-        this.setAcceptedNum(getAcceptedNum());
+        this.setAcceptedNum(question.getAcceptedNum());
         this.setJudgeConfig(JSONUtil.toBean(question.getJudgeConfig(), JudgeConfig.class));
         this.setUserId(question.getUserId());
         this.setCreateTime(question.getCreateTime());
