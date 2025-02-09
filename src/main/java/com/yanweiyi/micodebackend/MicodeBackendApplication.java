@@ -22,7 +22,10 @@ public class MicodeBackendApplication {
 
     @Value("${spring.rabbitmq.host}")
     private String rabbitmqHost;
-
+    @Value("${spring.rabbitmq.username}")
+    private String rabbitmqUsername;
+    @Value("${spring.rabbitmq.password}")
+    private String rabbitmqPassword;
     /**
      * 初始化消息队列
      */
@@ -30,6 +33,9 @@ public class MicodeBackendApplication {
     private void initMQ() {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(rabbitmqHost);
+        factory.setUsername(rabbitmqUsername);
+        factory.setPassword(rabbitmqPassword);
+        factory.setVirtualHost(rabbitmqUsername);
         try(Connection connection = factory.newConnection();) {
             Channel channel = connection.createChannel();
             String exchangeName = "judge_exchange";

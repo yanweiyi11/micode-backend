@@ -19,19 +19,20 @@ spring:
     timeout: 2592000 # Session 30 天过期
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/micode_db?useSSL=false
-    username: root
-    password: root
+    url: jdbc:mysql://mysql.sqlpub.com:3306/codedb?useSSL=false
+    username: yanweiyi
+    password: QUmPCn8vISxCoOY2
   redis:
-    database: 2
-    host: localhost
-    port: 6379
-    timeout: 5000
+    database: 0
+    host: redis-16455.c1.asia-northeast1-1.gce.redns.redis-cloud.com
+    port: 16455
+    password: I5IB8H8Pw0AQInHjQ2W53eci1qC6rEmu
   rabbitmq:
-    host: localhost
+    host: fuji-01.lmq.cloudamqp.com
     port: 5672
-    password: guest
-    username: guest
+    username: fqddcfny
+    password: CkwX_KaHKPM9YXycCaqG9EeVRzTADix-
+    virtual-host: fqddcfny
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
