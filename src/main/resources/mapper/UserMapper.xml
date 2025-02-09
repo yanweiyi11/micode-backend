@@ -12,7 +12,6 @@
         <result property="userProfile" column="userProfile" jdbcType="VARCHAR"/>
         <result property="gender" column="gender" jdbcType="TINYINT"/>
         <result property="email" column="email" jdbcType="VARCHAR"/>
-        <result property="tags" column="tags" jdbcType="VARCHAR"/>
         <result property="userRole" column="userRole" jdbcType="VARCHAR"/>
         <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
@@ -22,7 +21,7 @@
     <sql id="Base_Column_List">
         id,username,password,
         avatarUrl,userProfile,gender,
-        email,tags,userRole,
+        email,userRole,
         createTime,updateTime,isDelete
     </sql>
 </mapper>

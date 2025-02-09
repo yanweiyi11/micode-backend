@@ -111,12 +111,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Long updateId = updateRequest.getId();
         String username = updateRequest.getUsername();
         String password = updateRequest.getPassword();
-        String avatarUrl = updateRequest.getAvatarUrl();
-        String userProfile = updateRequest.getUserProfile();
-        Integer gender = updateRequest.getGender();
-        String email = updateRequest.getEmail();
-        List<String> tags = updateRequest.getTags();
-        String userRole = updateRequest.getUserRole();
 
         // 仅管理员和本人可更改
         User loginUser = this.getLoginUserOrThrow(request);
@@ -136,9 +130,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 throw new BusinessException(ApiStatusCode.PARAMS_ERROR, "密码长度过短");
             }
             user.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
-        }
-        if (CollectionUtil.isNotEmpty(tags)) {
-            user.setTags(JSONUtil.toJsonStr(tags));
         }
         return this.updateById(user);
     }
@@ -203,7 +194,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         String searchKey = queryRequest.getSearchKey();
         Integer gender = queryRequest.getGender();
-        List<String> tags = queryRequest.getTags();
         String userRole = queryRequest.getUserRole();
         String sort = queryRequest.getSort();
         String order = queryRequest.getOrder();
@@ -219,11 +209,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         queryWrapper.eq(ObjectUtil.isNotNull(gender), User::getGender, gender);
-        if (CollectionUtil.isNotEmpty(tags)) {
-            for (String tag : tags) {
-                queryWrapper.like(User::getTags, tag);
-            }
-        }
         queryWrapper.eq(StringUtils.isNotBlank(userRole), User::getUserRole, userRole);
 
         // 根据 sort 和 order 参数排序
@@ -256,12 +241,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(user, userVO);
-
-        String tagsStr = user.getTags();
-        if (StringUtils.isNotBlank(tagsStr)) {
-            List<String> tagsJson = JSONUtil.toList(JSONUtil.parseArray(tagsStr), String.class);
-            userVO.setTags(tagsJson);
-        }
         return userVO;
     }
 

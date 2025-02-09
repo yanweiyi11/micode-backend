@@ -23,11 +23,6 @@ public class UserQueryRequest extends PageRequest {
     private Integer gender;
 
     /**
-     * 标签（Json 数组）
-     */
-    private List<String> tags;
-
-    /**
      * 用户角色（user / admin / ban）
      */
     private String userRole;

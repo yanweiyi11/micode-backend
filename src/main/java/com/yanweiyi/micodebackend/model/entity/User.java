@@ -17,11 +17,7 @@ import java.util.Date;
 @Data
 @TableName(value = "user")
 public class User implements Serializable {
-    /**
-     * 用户编号
-     * -- GETTER --
-     * 用户编号
-     */
+
     @TableId(type = IdType.AUTO)
     private Long id;
 
@@ -66,13 +62,6 @@ public class User implements Serializable {
      * 邮箱
      */
     private String email;
-
-    /**
-     * 标签（Json 数组）
-     * -- GETTER --
-     * 标签（Json 数组）
-     */
-    private String tags;
 
     /**
      * 用户角色（user / admin / ban）

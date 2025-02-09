@@ -14,7 +14,6 @@ import com.yanweiyi.micodebackend.model.entity.User;
 import com.yanweiyi.micodebackend.model.vo.TagsVO;
 import com.yanweiyi.micodebackend.model.vo.UserVO;
 import com.yanweiyi.micodebackend.service.UserService;
-import com.yanweiyi.micodebackend.service.UserTagService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +31,6 @@ public class UserController {
 
     @Resource
     private UserService userService;
-    @Resource
-    private UserTagService userTagService;
 
     @PostMapping("/register")
     public ApiResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
@@ -88,10 +85,6 @@ public class UserController {
         // 拷贝数据
         User user = new User();
         BeanUtils.copyProperties(addRequest, user);
-
-        // 处理拷贝不了的 json 数据
-        List<String> tagsJson = addRequest.getTags();
-        user.setTags(JSONUtil.toJsonStr(tagsJson));
 
         // 仅管理员可操作
         if (!userService.isAdmin(loginUser)) {
@@ -198,15 +191,5 @@ public class UserController {
         }
         UserVO userVO = userService.findUserVO(user);
         return ResultUtils.success(userVO);
-    }
-
-    @GetMapping("/get-tags")
-    public ApiResponse<List<TagsVO>> getTags(HttpServletRequest request) {
-        // 仅管理员可查看
-        if (userService.isAdmin(request)) {
-            List<TagsVO> tagsVOList = userTagService.findStructuredTags();
-            return ResultUtils.success(tagsVOList);
-        }
-        throw new BusinessException(ApiStatusCode.NO_AUTH_ERROR);
     }
 }
