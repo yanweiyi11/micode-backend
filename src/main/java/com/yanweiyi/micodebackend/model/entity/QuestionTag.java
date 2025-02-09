@@ -42,11 +42,6 @@ public class QuestionTag implements Serializable {
     private Integer isParent;
 
     /**
-     * 是否删除
-     */
-    private Integer deleted;
-
-    /**
      * 创建时间
      */
     private Date createTime;
@@ -55,6 +50,11 @@ public class QuestionTag implements Serializable {
      * 更新时间
      */
     private Date updateTime;
+
+    /**
+     * 是否删除（0-未删除，1-已删除）
+     */
+    private Integer isDelete;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
