@@ -39,11 +39,6 @@ public class UserVO {
     private String email;
 
     /**
-     * 标签（Json 数组）
-     */
-    private List<String> tags;
-
-    /**
      * 用户角色（user / admin / ban）
      */
     private String userRole;
