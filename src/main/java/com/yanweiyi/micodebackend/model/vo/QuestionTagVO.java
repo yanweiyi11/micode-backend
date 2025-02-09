@@ -9,9 +9,7 @@ import java.util.Date;
  */
 @Data
 public class QuestionTagVO {
-    /**
-     * 题目标签编号
-     */
+
     private Long id;
 
     /**
@@ -20,12 +18,12 @@ public class QuestionTagVO {
     private String tagName;
 
     /**
-     * 创建此标签的用户编号
+     * 创建者id
      */
     private Long userId;
 
     /**
-     * 父标签编号
+     * 父标签id
      */
     private Long parentId;
 

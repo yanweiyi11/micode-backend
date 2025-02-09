@@ -10,9 +10,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class QuestionSubmitQueryRequest extends PageRequest {
-    /**
-     * 题目提交编号
-     */
+
     private Long id;
 
     /**
@@ -36,12 +34,12 @@ public class QuestionSubmitQueryRequest extends PageRequest {
     private String judgeInfoResult;
 
     /**
-     * 题目编号
+     * 题目id
      */
     private Long questionId;
 
     /**
-     * 提交者的用户编号
+     * 提交者id
      */
     private Long userId;
 

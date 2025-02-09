@@ -40,7 +40,7 @@ create table if not exists question
 
 create table if not exists question_submit
 (
-    id         bigint auto_increment comment '题目提交编号' primary key,
+    id         bigint auto_increment primary key,
     language   varchar(64)                                                    not null comment '编程语言',
     code       text                                                           not null comment '用户代码',
     status     INT                                                            not null comment '判题状态',

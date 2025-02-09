@@ -9,9 +9,7 @@ import java.util.List;
  */
 @Data
 public class UserUpdateRequest {
-    /**
-     * 用户编号
-     */
+
     private Long id;
 
     /**

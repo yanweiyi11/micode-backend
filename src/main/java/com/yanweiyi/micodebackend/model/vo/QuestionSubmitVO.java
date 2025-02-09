@@ -10,9 +10,7 @@ import java.util.Date;
  */
 @Data
 public class QuestionSubmitVO {
-    /**
-     * 提交编号
-     */
+
     private Long id;
 
     /**
@@ -36,12 +34,12 @@ public class QuestionSubmitVO {
     private JudgeInfo judgeInfo;
 
     /**
-     * 题目编号
+     * 题目id
      */
     private Long questionId;
 
     /**
-     * 提交者的用户编号
+     * 提交者id
      */
     private Long userId;
 

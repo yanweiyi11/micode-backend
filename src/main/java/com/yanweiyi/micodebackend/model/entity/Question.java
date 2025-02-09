@@ -17,9 +17,7 @@ import java.util.Date;
 @Data
 @TableName(value = "question")
 public class Question implements Serializable {
-    /**
-     * 题目编号
-     */
+
     @TableId(type = IdType.AUTO)
     private Long id;
 
@@ -69,7 +67,7 @@ public class Question implements Serializable {
     private String judgeConfig;
 
     /**
-     * 上传者的用户编号
+     * 上传者id
      */
     private Long userId;
 

@@ -18,7 +18,7 @@ public class QuestionSubmitDoJudgeRequest {
     private String code;
 
     /**
-     * 题目编号
+     * 题目id
      */
     private Long questionId;
 

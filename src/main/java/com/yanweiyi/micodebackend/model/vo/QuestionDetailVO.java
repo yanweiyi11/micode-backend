@@ -14,9 +14,7 @@ import java.util.List;
  */
 @Data
 public class QuestionDetailVO {
-    /**
-     * 题目编号
-     */
+
     private Long id;
 
     /**
@@ -65,7 +63,7 @@ public class QuestionDetailVO {
     private JudgeInfo judgeInfo;
 
     /**
-     * 上传者的用户编号
+     * 上传者id
      */
     private Long userId;
 

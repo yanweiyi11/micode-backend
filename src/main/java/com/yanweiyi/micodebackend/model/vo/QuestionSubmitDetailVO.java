@@ -10,9 +10,7 @@ import java.util.Date;
  */
 @Data
 public class QuestionSubmitDetailVO {
-    /**
-     * 提交编号
-     */
+
     private Long id;
 
     /**

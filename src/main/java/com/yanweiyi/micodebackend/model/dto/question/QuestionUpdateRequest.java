@@ -11,9 +11,7 @@ import java.util.List;
  */
 @Data
 public class QuestionUpdateRequest {
-    /**
-     * 题目编号
-     */
+
     private Long id;
 
     /**

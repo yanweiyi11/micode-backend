@@ -88,7 +88,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         int page = queryRequest.getPage();
         int size = queryRequest.getSize();
 
-        // 查题目 / 内容 / 编号
+        // 查题目 / 内容 / id
         LambdaQueryWrapper<Question> questionWrapper = new LambdaQueryWrapper<>();
         String searchKey = queryRequest.getSearchKey();
         // 创建条件构造器

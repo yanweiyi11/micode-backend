@@ -33,12 +33,12 @@ public class QuestionSubmitDetailQueryRequest extends PageRequest {
     private Integer status;
 
     /**
-     * 题目编号
+     * 题目id
      */
     private Long questionId;
 
     /**
-     * 提交者的用户编号
+     * 提交者id
      */
     private Long userId;
 }

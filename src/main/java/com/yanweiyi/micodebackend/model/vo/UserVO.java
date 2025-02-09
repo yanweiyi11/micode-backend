@@ -10,9 +10,7 @@ import java.util.List;
  */
 @Data
 public class UserVO {
-    /**
-     * 用户编号
-     */
+
     private Long id;
 
     /**

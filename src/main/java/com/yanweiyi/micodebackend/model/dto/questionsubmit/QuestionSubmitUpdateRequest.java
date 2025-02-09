@@ -8,9 +8,7 @@ import lombok.Data;
  */
 @Data
 public class QuestionSubmitUpdateRequest {
-    /**
-     * 提交编号
-     */
+
     private Long id;
 
     /**

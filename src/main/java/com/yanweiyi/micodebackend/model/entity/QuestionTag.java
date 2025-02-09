@@ -17,9 +17,7 @@ import java.util.Date;
 @Data
 @TableName(value = "question_tag")
 public class QuestionTag implements Serializable {
-    /**
-     * 题目标签编号
-     */
+
     @TableId(type = IdType.AUTO)
     private Long id;
 
@@ -29,12 +27,12 @@ public class QuestionTag implements Serializable {
     private String tagName;
 
     /**
-     * 创建此标签的用户编号
+     * 创建者id
      */
     private Long userId;
 
     /**
-     * 父标签编号
+     * 父标签id
      */
     private Long parentId;
 

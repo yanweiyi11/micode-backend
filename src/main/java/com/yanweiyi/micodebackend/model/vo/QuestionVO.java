@@ -14,9 +14,7 @@ import java.util.List;
  */
 @Data
 public class QuestionVO {
-    /**
-     * 题目编号
-     */
+
     private Long id;
 
     /**
@@ -65,7 +63,7 @@ public class QuestionVO {
     private JudgeConfig judgeConfig;
 
     /**
-     * 上传者的用户编号
+     * 上传者id
      */
     private Long userId;
 

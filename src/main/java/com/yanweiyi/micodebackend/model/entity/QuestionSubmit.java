@@ -17,9 +17,7 @@ import java.util.Date;
 @Data
 @TableName(value = "question_submit")
 public class QuestionSubmit implements Serializable {
-    /**
-     * 题目提交编号
-     */
+
     @TableId(type = IdType.AUTO)
     private Long id;
 
@@ -44,12 +42,12 @@ public class QuestionSubmit implements Serializable {
     private String judgeInfo;
 
     /**
-     * 题目编号
+     * 题目id
      */
     private Long questionId;
 
     /**
-     * 提交者的用户编号
+     * 提交者id
      */
     private Long userId;
 
