@@ -2,6 +2,7 @@ package com.yanweiyi.micodebackend.model.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  * @author yanweiyi
  */
 @Data
-public class UserVO {
+public class UserVO implements Serializable {
 
     private Long id;
 
@@ -48,4 +49,5 @@ public class UserVO {
      */
     private Date createTime;
 
+    private static final long serialVersionUID = 1L;
 }

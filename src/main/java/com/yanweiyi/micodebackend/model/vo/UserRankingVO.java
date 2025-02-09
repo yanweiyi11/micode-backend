@@ -5,15 +5,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRankingVO extends UserVO implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class UserRankingVO extends UserVO {
 
     /**
      * 提交总数
