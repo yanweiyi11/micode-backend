@@ -18,21 +18,23 @@ import com.yanweiyi.micodebackend.model.dto.questionsubmit.QuestionSubmitDetailQ
 import com.yanweiyi.micodebackend.model.entity.Question;
 import com.yanweiyi.micodebackend.model.entity.QuestionSubmit;
 import com.yanweiyi.micodebackend.model.entity.User;
-import com.yanweiyi.micodebackend.model.vo.QuestionSubmitDetailVO;
-import com.yanweiyi.micodebackend.model.vo.QuestionSubmitVO;
-import com.yanweiyi.micodebackend.model.vo.QuestionVO;
-import com.yanweiyi.micodebackend.model.vo.UserVO;
+import com.yanweiyi.micodebackend.model.enums.QuestionSubmitStatusEnum;
+import com.yanweiyi.micodebackend.model.vo.*;
 import com.yanweiyi.micodebackend.service.QuestionService;
 import com.yanweiyi.micodebackend.service.QuestionSubmitService;
 import com.yanweiyi.micodebackend.service.UserService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -45,9 +47,19 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
 
     @Resource
     private UserService userService;
+
     @Resource
     @Lazy
     private QuestionService questionService;
+
+    @Resource
+    @Lazy
+    private QuestionSubmitService questionSubmitService;
+
+    @Resource
+    private RedisTemplate<String, List<UserRankingVO>> redisTemplate;
+
+    private static final String LEADERBOARD_CACHE_KEY = "micode:leaderboard:top20";
 
     /**
      * 根据传入的 sort 字符串获取对应的排序字段
@@ -210,5 +222,63 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
             questionSubmitVO.setCreateTime(questionSubmit.getCreateTime());
             return questionSubmitVO;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserRankingVO> findTopRankedUsers() {
+        // 尝试从 Redis 缓存中获取排行榜数据
+        List<UserRankingVO> cachedRankings = redisTemplate.opsForValue().get(LEADERBOARD_CACHE_KEY);
+        if (!CollectionUtils.isEmpty(cachedRankings)) {
+            return cachedRankings;
+        }
+
+        // 获取所有用户的提交记录
+        List<QuestionSubmit> allSubmissions = questionSubmitService.list();
+
+        // 计算每个用户的通过率
+        List<UserRankingVO> rankings = getRankings(allSubmissions);
+
+        // 计算排名
+        rankings.sort(Comparator.comparingDouble(UserRankingVO::getAcceptanceRate).reversed());
+
+        // 查询用户信息
+        List<UserRankingVO> result = rankings.size() > 20 ? rankings.subList(0, 20) : rankings;
+        Set<Long> userIds = result.stream()
+                .map(UserRankingVO::getId)
+                .collect(Collectors.toSet());
+        List<User> userList = userService.lambdaQuery()
+                .in(User::getId, userIds)
+                .list();
+        Map<Long, User> userMap = userList.stream()
+                .collect(Collectors.toMap(User::getId, Function.identity()));
+
+        result.forEach(user -> {
+            User tempUser  = userMap.get(user.getId());
+            BeanUtils.copyProperties(tempUser , user);
+        });
+
+        // 将结果存入 Redis 缓存，设置过期时间为 10 分钟
+        redisTemplate.opsForValue().set(LEADERBOARD_CACHE_KEY, result, 10, TimeUnit.MINUTES);
+
+        return result;
+    }
+
+    @NotNull
+    private static List<UserRankingVO> getRankings(List<QuestionSubmit> allSubmissions) {
+        Map<Long, UserRankingVO> userRankingMap = new HashMap<>();
+        for (QuestionSubmit submission : allSubmissions) {
+            if (!userRankingMap.containsKey(submission.getUserId())) {
+                UserRankingVO userRankingVO = new UserRankingVO();
+                userRankingVO.setId(submission.getUserId());
+                userRankingMap.put(submission.getUserId(), userRankingVO);
+            }
+            UserRankingVO userRanking = userRankingMap.get(submission.getUserId());
+            userRanking.incrementTotalSubmissions();
+            if (QuestionSubmitStatusEnum.SUCCEED.equalsValue(submission.getStatus())) {
+                userRanking.incrementAcceptedSubmissions();
+            }
+        }
+
+        return new ArrayList<>(userRankingMap.values());
     }
 }

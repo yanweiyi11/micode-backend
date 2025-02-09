@@ -20,6 +20,7 @@ import com.yanweiyi.micodebackend.model.entity.User;
 import com.yanweiyi.micodebackend.model.enums.QuestionSubmitStatusEnum;
 import com.yanweiyi.micodebackend.model.vo.QuestionSubmitDetailVO;
 import com.yanweiyi.micodebackend.model.vo.QuestionSubmitVO;
+import com.yanweiyi.micodebackend.model.vo.UserRankingVO;
 import com.yanweiyi.micodebackend.rabbitmq.MessageProducer;
 import com.yanweiyi.micodebackend.service.QuestionService;
 import com.yanweiyi.micodebackend.service.QuestionSubmitService;
@@ -189,5 +190,10 @@ public class QuestionSubmitController {
         }
         List<QuestionSubmitVO> questionSubmitVOList = questionSubmitService.findQuestionSubmitVOByQuestionId(questionId, request);
         return ResultUtils.success(questionSubmitVOList);
+    }
+
+    @PostMapping("/get-top-ranked-users")
+    public ApiResponse<List<UserRankingVO>> getTopRankedUsers() {
+        return ResultUtils.success(questionSubmitService.findTopRankedUsers());
     }
 }

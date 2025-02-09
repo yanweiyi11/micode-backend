@@ -6,6 +6,8 @@ import com.yanweiyi.micodebackend.model.dto.questionsubmit.QuestionSubmitDetailQ
 import com.yanweiyi.micodebackend.model.entity.QuestionSubmit;
 import com.yanweiyi.micodebackend.model.vo.QuestionSubmitDetailVO;
 import com.yanweiyi.micodebackend.model.vo.QuestionSubmitVO;
+import com.yanweiyi.micodebackend.model.vo.UserRankingVO;
+import com.yanweiyi.micodebackend.model.vo.UserVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -22,4 +24,6 @@ public interface QuestionSubmitService extends IService<QuestionSubmit> {
     Page<QuestionSubmitDetailVO> findQuestionSubmitDetailVOByPage(QuestionSubmitDetailQueryRequest queryRequest, HttpServletRequest request);
 
     List<QuestionSubmitVO> findQuestionSubmitVOByQuestionId(Long questionId, HttpServletRequest request);
+
+    List<UserRankingVO> findTopRankedUsers();
 }
