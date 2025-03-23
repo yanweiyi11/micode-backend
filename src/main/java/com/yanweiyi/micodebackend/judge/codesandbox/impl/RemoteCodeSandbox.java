@@ -8,6 +8,7 @@ import com.yanweiyi.micodebackend.exception.BusinessException;
 import com.yanweiyi.micodebackend.judge.codesandbox.CodeSandbox;
 import com.yanweiyi.micodebackend.judge.codesandbox.model.ExecuteCodeRequest;
 import com.yanweiyi.micodebackend.judge.codesandbox.model.ExecuteCodeResponse;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * 远程调用代码沙箱
@@ -15,6 +16,9 @@ import com.yanweiyi.micodebackend.judge.codesandbox.model.ExecuteCodeResponse;
  * @author yanweiyi
  */
 public class RemoteCodeSandbox implements CodeSandbox {
+
+    @Value("${codesandbox.remote.url}")
+    private String url;
 
     /**
      * 鉴权请求头和密钥
@@ -24,9 +28,6 @@ public class RemoteCodeSandbox implements CodeSandbox {
 
     @Override
     public ExecuteCodeResponse executeCode(ExecuteCodeRequest request) {
-        String url = "http://124.71.38.164:11090/executeCode";
-        // String url = "http://159.75.93.145:11090/executeCode";
-        // String url = "http://192.168.126.3:11090/executeCode";
         String jsonStr = JSONUtil.toJsonStr(request);
         String responseStr = HttpUtil.createPost(url)
                 .header(AUTH_REQUEST_HEADER, AUTH_REQUEST_SECRET)

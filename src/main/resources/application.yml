@@ -50,3 +50,5 @@ knife4j:
 # 代码沙箱配置
 codesandbox:
   type: remote
+  remote:
+    url: http://192.168.126.3:11090/executeCode
